@@ -1,0 +1,19 @@
+.wine-profile{padding:30px 0 6px}
+.wine-profile>.kicker{margin-bottom:10px}
+.wine-profile h2{font-size:34px;line-height:1.02;letter-spacing:-.055em;margin:0 0 24px;max-width:390px}
+.tasting-notes{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--merlot);border-bottom:1px solid var(--line)}
+.tasting-notes>div{min-height:106px;padding:16px 10px 15px 0}
+.tasting-notes>div+div{border-left:1px solid var(--line);padding-left:12px}
+.tasting-notes strong,.tasting-notes span{display:block}
+.tasting-notes strong{font-size:14px;line-height:1.15;color:var(--wine-night)}
+.tasting-notes span{font-size:10px;line-height:1.35;color:#76535c;margin-top:7px}
+.maker-note{margin:22px 0 0;padding:21px 20px;background:var(--rose-mist);border-radius:20px}
+.maker-note span{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--merlot)}
+.maker-note p{font-size:14px;line-height:1.55;margin:9px 0 0;color:#4f2c36}
+.serve-note{font-size:13px;line-height:1.5;margin:22px 0}
+.serve-note b{display:block;color:var(--merlot);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.bottle-specs{display:grid;grid-template-columns:repeat(3,1fr);margin:0;padding:15px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.bottle-specs>div+div{border-left:1px solid var(--line);padding-left:14px}
+.bottle-specs dt{font-size:9px;color:#805963;text-transform:uppercase;letter-spacing:.08em}
+.bottle-specs dd{font-size:13px;font-weight:800;margin:5px 0 0;color:var(--wine-night)}
+@media(max-width:360px){.wine-profile h2{font-size:30px}.tasting-notes strong{font-size:12px}.maker-note{padding:18px}}

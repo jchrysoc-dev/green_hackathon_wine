@@ -10,8 +10,21 @@
       "price_eur": 8.5,
       "flavour": { "body": 3, "acidity": 2, "fruit": 4, "tannin": 2, "sweetness": 2 },
       "tags": ["medium-bodied", "plum", "red berries"],
-      "pairings": ["tomato-based pasta", "pizza", "antipasto"],
-      "description": "A 75cl Merlot from South Eastern Australia with plum and red-berry flavours. Serve with tomato-based pasta dishes.",
+      "pairings": ["tomato-based pasta", "roast chicken", "pizza"],
+      "description": "A smooth, easy-drinking Merlot with ripe plum and red-berry flavours, made from fruit grown across South Eastern Australia.",
+      "profile": {
+        "headline": "Smooth, fruity and easy to share.",
+        "notes": [
+          { "name": "Plum", "detail": "ripe and rounded" },
+          { "name": "Red berries", "detail": "bright, juicy fruit" },
+          { "name": "Soft finish", "detail": "medium-bodied" }
+        ],
+        "story": "McGuigan Estate wines use carefully harvested fruit from vineyards across South Eastern Australia, backed by generations of McGuigan winemaking.",
+        "serve": "Pour with roast chicken or tomato-based pasta. Made to enjoy now.",
+        "abv": "11%",
+        "size": "75cl",
+        "closure": "Screwcap"
+      },
       "bottle": { "type": "standard", "glass_g": 0, "deposit_eur": 0 },
       "online": false,
       "photos": [],
