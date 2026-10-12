@@ -104,8 +104,8 @@ let mapsPromise;
 function loadGoogleMaps(){
   if(window.google?.maps) return Promise.resolve(window.google.maps);
   if(mapsPromise) return mapsPromise;
-  const key=import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  if(!key) return Promise.reject(new Error('Google Maps is not configured yet. Add VITE_GOOGLE_MAPS_API_KEY in Vercel.'));
+  const key=import.meta.env.config_GM_API_KEY;
+  if(!key) return Promise.reject(new Error('Google Maps is not configured yet. Add config_GM_API_KEY in Vercel.'));
   mapsPromise=new Promise((resolve,reject)=>{
     window.__loovinMapsReady=()=>resolve(window.google.maps);
     const script=document.createElement('script');
