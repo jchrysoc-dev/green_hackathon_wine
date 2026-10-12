@@ -1,5 +1,6 @@
 import './style.css';
 import './quiz.css';
+import './commerce.css';
 import catalogue from './data/wines.json';
 
 const wines = catalogue.wines;
@@ -32,9 +33,10 @@ const quizQuestions = [
     { label: 'I have a sweet tooth', note: 'soft and lush', scores: { body: 2, acidity: 2, fruit: 5, tannin: 1, sweetness: 5 } }
   ]}
 ];
-const state = { page: 'home', selected: null, age: localStorage.getItem('tasteme-age') === 'yes', tasted: false, returned: Number(localStorage.getItem('tasteme-returned') || 0), quizStep: 0, quizAnswers: [], quizProfile: null };
+const storedNumber = (key) => { try { return Number(localStorage.getItem(key) || 0); } catch { return 0; } };
+const state = { page: 'home', selected: null, age: localStorage.getItem('tasteme-age') === 'yes', tasted: false, returned: storedNumber('tasteme-returned'), refund: storedNumber('tasteme-refund'), orders: storedNumber('tasteme-orders'), quizStep: 0, quizAnswers: [], quizProfile: null };
 const $ = (s) => document.querySelector(s);
-const save = () => localStorage.setItem('tasteme-returned', state.returned);
+const saveReturns = () => { try { localStorage.setItem('tasteme-returned', state.returned); localStorage.setItem('tasteme-refund', state.refund.toFixed(2)); } catch {} };
 
 function shell(content) {
   return `<div class="app-shell"><header class="topbar"><button class="brand" aria-label="TasteMe home">taste<span>me</span></button><button class="impact" data-go="impact">${state.returned} bottles back in use <i>↗</i></button></header>${content}<nav class="dock"><button class="active" data-go="home"><span>⌂</span>Home</button><button data-go="scan"><span>◎</span>Scan</button><button data-go="impact"><span>↺</span>My impact</button></nav></div>`;
@@ -46,7 +48,7 @@ function render(){
     bind();
     return;
   }
-  let content = state.page==='home' ? home() : state.page==='scan' ? scan() : state.page==='quiz' ? quiz() : state.page==='results' ? results() : state.page==='impact' ? impact() : detail();
+  let content = state.page==='home' ? home() : state.page==='scan' ? scan() : state.page==='quiz' ? quiz() : state.page==='results' ? results() : state.page==='checkout' ? checkout() : state.page==='confirmation' ? confirmation() : state.page==='stores' ? stores() : state.page==='impact' ? impact() : detail();
   $('#app').innerHTML = shell(content); bind();
 }
 function home(){ const match=wines.find(w=>w.id==='southbank-merlot'); return `<main class="page home"><div class="notice">La vente d'alcool aux mineurs est interdite.</div><section class="hero"><p class="kicker">Your next good bottle</p><h1>Wine, without<br/><em>the noise.</em></h1><p>Tell us what you like. We’ll do the shelf talk.</p><button class="button dark wide" data-go="scan">Scan a bottle <span>→</span></button><button class="text-button" data-start-quiz>or start with a taste quiz</button></section><section class="feature"><div class="feature-copy"><p class="kicker">Picked for a soft, fruity palate</p><h2>${match.name}</h2><p class="muted">${match.tags.join(' · ')} · ${match.region}</p><button class="button pale" data-wine="${match.id}">See why it fits</button></div><div class="bottle-art"><div class="bottle-neck"></div><div class="bottle-body"><span>TM</span><b>AUSTRALIA</b><small>soft red</small></div></div></section><section class="how"><p class="kicker">Three small steps</p><div class="steps"><div><b>01</b><strong>Scan</strong><span>the bottle in front of you</span></div><div><b>02</b><strong>Match</strong><span>your taste to the catalogue</span></div><div><b>03</b><strong>Return</strong><span>the reusable one when done</span></div></div></section>${warning()}</main>`; }
@@ -73,9 +75,18 @@ function profileMatch(profile, flavour){
   const distance = Math.sqrt(Object.keys(profile).reduce((sum,trait)=>sum+Math.pow(profile[trait]-flavour[trait],2),0));
   return Math.max(70, Math.round(100-(distance/Math.sqrt(80))*100));
 }
-function detail(){ const w=state.selected||wines[1]; const identified=w.id===DEMO_WINE_ID; return `<main class="page detail"><button class="back" data-go="home">← Back</button><div class="detail-head"><div class="bottle-art large"><div class="bottle-neck"></div><div class="bottle-body"><span>MG</span><b>${identified?'AUSTRALIA':w.region}</b><small>${w.tags[0]}</small></div></div><div><p class="kicker">${w.producer}</p><h1>${w.name.replace('PLACEHOLDER – ','')}</h1><p class="muted">${w.region} · ${w.colour} · €${w.price_eur.toFixed(2)}</p></div></div><div class="match"><strong>${identified?'Found':'92%'}</strong><span>${identified?'bottle identified':'match for your palate'}</span><p>${identified?w.description:'Light and fruity, with the same fresh red-fruit character you tend to like.'}</p></div><div class="facts"><div><span>Style</span><b>${w.tags.join(', ')}</b></div><div><span>With</span><b>${w.pairings.slice(0,2).join(' or ')}</b></div><div><span>Bottle</span><b>${w.bottle.type}${w.bottle.deposit_eur ? ` · €${w.bottle.deposit_eur.toFixed(2)} deposit` : ''}</b></div></div><button class="button dark wide" data-order>Buy from producer · €${w.price_eur.toFixed(2)}</button><button class="button outline wide" data-go="home">Find a shop nearby</button>${warning()}</main>`; }
-function impact(){ return `<main class="page impact-page"><p class="kicker">Your small circle</p><h1>Good bottles<br/><em>come back.</em></h1><div class="impact-number"><strong>${state.returned}</strong><span>bottles returned</span></div><div class="impact-card"><span>Glass kept in use</span><strong>${state.returned*500}g</strong><p>Return a reusable bottle and the deposit is refunded — never store credit.</p></div><button class="button dark wide" data-return>Scan a return QR</button><p class="micro">Demo mode: this marks one bottle as returned.</p>${warning()}</main>`; }
-function bind(){ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{state.page=b.dataset.go;render()}); document.querySelectorAll('[data-age]').forEach(b=>b.onclick=()=>{if(b.dataset.age==='yes'){state.age=true;localStorage.setItem('tasteme-age','yes');render()}else $('#app').innerHTML='<main class="gate"><h1>Thanks for checking.</h1><p>TasteMe is for adults only.</p></main>'}); document.querySelectorAll('[data-wine]').forEach(b=>b.onclick=()=>{state.selected=wines.find(w=>w.id===b.dataset.wine);state.page='detail';render()}); $('[data-demo]')?.addEventListener('click',()=>openWine(DEMO_WINE_ID)); $('[data-return]')?.addEventListener('click',()=>{state.returned++;save();render()}); $('[data-order]')?.addEventListener('click',()=>{alert('Demo order placed. No payment was taken.');});
+function detail(){ const w=state.selected||wines[1]; const identified=w.id===DEMO_WINE_ID; return `<main class="page detail"><button class="back" data-go="home">← Back</button><div class="detail-head"><div class="bottle-art large"><div class="bottle-neck"></div><div class="bottle-body"><span>MG</span><b>${identified?'AUSTRALIA':w.region}</b><small>${w.tags[0]}</small></div></div><div><p class="kicker">${w.producer}</p><h1>${w.name.replace('PLACEHOLDER – ','')}</h1><p class="muted">${w.region} · ${w.colour} · €${w.price_eur.toFixed(2)}</p></div></div><div class="match"><strong>${identified?'Found':'92%'}</strong><span>${identified?'bottle identified':'match for your palate'}</span><p>${identified?w.description:'Light and fruity, with the same fresh red-fruit character you tend to like.'}</p></div><div class="facts"><div><span>Style</span><b>${w.tags.join(', ')}</b></div><div><span>With</span><b>${w.pairings.slice(0,2).join(' or ')}</b></div><div><span>Bottle</span><b>${w.bottle.type}${w.bottle.deposit_eur ? ` · €${w.bottle.deposit_eur.toFixed(2)} deposit` : ''}</b></div></div><button class="button dark wide" data-checkout>Buy from producer · €${w.price_eur.toFixed(2)}</button><button class="button outline wide" data-nearby>Find a shop nearby</button>${warning()}</main>`; }
+function checkout(){ const w=state.selected||wines.find(wine=>wine.id===DEMO_WINE_ID); const total=w.price_eur+w.bottle.deposit_eur; return `<main class="page checkout-page"><div class="notice">La vente d'alcool aux mineurs est interdite.</div><button class="back" data-back-detail>← Back to wine</button><p class="kicker">Demo checkout</p><h1>One bottle.<br/><em>No details needed.</em></h1><p class="checkout-intro">This is a simulated order. No payment or personal information will be collected.</p><section class="order-slip"><div><span>Wine</span><strong>${w.name}</strong></div><div><span>Bottle</span><strong>€${w.price_eur.toFixed(2)}</strong></div>${w.bottle.deposit_eur?`<div><span>Refundable deposit</span><strong>€${w.bottle.deposit_eur.toFixed(2)}</strong></div>`:''}<div class="order-total"><span>Demo total</span><strong>€${total.toFixed(2)}</strong></div></section><div class="breathalyser"><strong>Éthylotests are available</strong><p>Breathalysers are available from pharmacies and road-safety retailers.</p></div><button class="button dark wide" data-place-order>Place demo order <span>→</span></button>${warning()}</main>`; }
+function confirmation(){ const w=state.selected||wines.find(wine=>wine.id===DEMO_WINE_ID); return `<main class="page confirmation-page"><div class="notice">La vente d'alcool aux mineurs est interdite.</div><div class="confirmation-mark">✓</div><p class="kicker">Demo order placed</p><h1>That’s<br/><em>confirmed.</em></h1><p>No payment was taken and no personal details were collected.</p><section class="order-slip"><div><span>Wine</span><strong>${w.name}</strong></div><div><span>Order</span><strong>TM-${String(state.orders).padStart(3,'0')}</strong></div></section><button class="button dark wide" data-go="home">Back to home <span>→</span></button>${warning()}</main>`; }
+function stores(){ return `<main class="page stores-page"><button class="back" data-back-detail>← Back to wine</button><p class="kicker">Near you</p><h1>Find a bottle<br/><em>close by.</em></h1><p class="stores-intro">We’ll use your current location once to find nearby wine and bottle shops.</p><button class="button dark wide" data-find-stores>Use my current location <span>◎</span></button><p id="map-status" class="map-status">Location permission is required.</p><div id="shop-map" aria-label="Map of nearby wine shops"></div><div id="shop-list" class="shop-list"></div></main>`; }
+function impact(){ return `<main class="page impact-page"><p class="kicker">Return a bottle</p><h1>Good bottles<br/><em>come back.</em></h1><div class="return-counters"><div class="impact-number"><strong>${state.returned}</strong><span>bottles returned</span></div><div class="refund-number"><strong>€${state.refund.toFixed(2)}</strong><span>deposit refunded</span></div></div><div class="impact-card"><span>Glass kept in use</span><strong>${state.returned*500}g</strong><p>Each demo return refunds €0.50. The refund is never converted into store credit.</p></div><button class="button dark wide" data-return>Scan return QR <span>+ €0.50</span></button><p id="return-status" class="micro">Demo mode: press the button to scan one returned bottle.</p>${warning()}</main>`; }
+function bind(){ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{state.page=b.dataset.go;render()}); document.querySelectorAll('[data-age]').forEach(b=>b.onclick=()=>{if(b.dataset.age==='yes'){state.age=true;localStorage.setItem('tasteme-age','yes');render()}else $('#app').innerHTML='<main class="gate"><h1>Thanks for checking.</h1><p>TasteMe is for adults only.</p></main>'}); document.querySelectorAll('[data-wine]').forEach(b=>b.onclick=()=>{state.selected=wines.find(w=>w.id===b.dataset.wine);state.page='detail';render()}); $('[data-demo]')?.addEventListener('click',()=>openWine(DEMO_WINE_ID));
+  $('[data-return]')?.addEventListener('click',()=>{state.returned++;state.refund=Number((state.refund+.5).toFixed(2));saveReturns();render()});
+  $('[data-checkout]')?.addEventListener('click',()=>{state.page='checkout';render()});
+  $('[data-place-order]')?.addEventListener('click',()=>{state.orders++;try{localStorage.setItem('tasteme-orders',state.orders)}catch{}state.page='confirmation';render()});
+  document.querySelectorAll('[data-back-detail]').forEach(button=>button.addEventListener('click',()=>{state.page='detail';render()}));
+  $('[data-nearby]')?.addEventListener('click',()=>{state.page='stores';render();findNearbyStores()});
+  $('[data-find-stores]')?.addEventListener('click',findNearbyStores);
   $('[data-start-quiz]')?.addEventListener('click',()=>{state.quizStep=0;state.quizAnswers=[];state.page='quiz';render()});
   $('[data-quiz-back]')?.addEventListener('click',()=>{if(state.quizStep===0){state.page='home'}else{state.quizStep--}render()});
   document.querySelectorAll('[data-answer]').forEach(button=>button.addEventListener('click',()=>{state.quizAnswers[state.quizStep]=quizQuestions[state.quizStep].options[Number(button.dataset.answer)].scores;if(state.quizStep===quizQuestions.length-1){finishQuiz()}else{state.quizStep++;render()}}));
@@ -86,6 +97,51 @@ function bind(){ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=
   scanFile?.addEventListener('change', (event) => { const file = event.target.files[0]; if (!file) return; const status = $('#scan-status'); const results = $('#scan-results'); status.textContent = 'Reading the label…'; results.innerHTML = '<p class="scan-note">Comparing bottle details…</p>';
     window.setTimeout(() => openWine(DEMO_WINE_ID), 650);
   });
+}
+let mapsPromise;
+function loadGoogleMaps(){
+  if(window.google?.maps) return Promise.resolve(window.google.maps);
+  if(mapsPromise) return mapsPromise;
+  const key=import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  if(!key) return Promise.reject(new Error('Google Maps is not configured yet. Add VITE_GOOGLE_MAPS_API_KEY in Vercel.'));
+  mapsPromise=new Promise((resolve,reject)=>{
+    window.__tastemeMapsReady=()=>resolve(window.google.maps);
+    const script=document.createElement('script');
+    script.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly&loading=async&callback=__tastemeMapsReady`;
+    script.async=true; script.onerror=()=>reject(new Error('Google Maps could not load. Check the API key and enabled APIs.'));
+    document.head.appendChild(script);
+  });
+  return mapsPromise;
+}
+function currentLocation(){
+  return new Promise((resolve,reject)=>{
+    if(!navigator.geolocation){reject(new Error('Location is not supported by this browser.'));return;}
+    navigator.geolocation.getCurrentPosition(position=>resolve({lat:position.coords.latitude,lng:position.coords.longitude}),()=>reject(new Error('Location access was not allowed. Enable it in your browser and try again.')),{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+  });
+}
+async function findNearbyStores(){
+  const status=$('#map-status'); const mapElement=$('#shop-map'); const list=$('#shop-list');
+  if(!status||!mapElement||!list) return;
+  status.textContent='Getting your location…'; list.innerHTML='';
+  try{
+    const center=await currentLocation(); status.textContent='Finding nearby wine shops…';
+    const maps=await loadGoogleMaps();
+    const [{Map},{Place,SearchNearbyRankPreference},{AdvancedMarkerElement}]=await Promise.all([maps.importLibrary('maps'),maps.importLibrary('places'),maps.importLibrary('marker')]);
+    const map=new Map(mapElement,{center,zoom:14,mapId:'DEMO_MAP_ID',mapTypeControl:false,streetViewControl:false,fullscreenControl:false});
+    new AdvancedMarkerElement({map,position:center,title:'Your location'});
+    const {places}=await Place.searchNearby({fields:['displayName','location','formattedAddress','googleMapsURI','rating'],locationRestriction:{center,radius:5000},includedPrimaryTypes:['liquor_store'],maxResultCount:6,rankPreference:SearchNearbyRankPreference.DISTANCE});
+    if(!places.length){status.textContent='No wine shops were found within 5 km.';return;}
+    status.textContent=`${places.length} nearby shops found`;
+    const bounds=new maps.LatLngBounds(center);
+    places.forEach((place,index)=>{
+      if(place.location){new AdvancedMarkerElement({map,position:place.location,title:place.displayName});bounds.extend(place.location);}
+      const link=document.createElement('a'); link.className='shop-result'; link.href=place.googleMapsURI||`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.displayName)}`; link.target='_blank'; link.rel='noreferrer';
+      const number=document.createElement('span'); number.textContent=String(index+1).padStart(2,'0');
+      const copy=document.createElement('span'); const name=document.createElement('strong'); name.textContent=place.displayName||'Wine shop'; const address=document.createElement('small'); address.textContent=place.formattedAddress||'Open in Google Maps'; copy.append(name,address);
+      const rating=document.createElement('b'); rating.textContent=place.rating?`${place.rating.toFixed(1)} ★`:'Map'; link.append(number,copy,rating); list.appendChild(link);
+    });
+    map.fitBounds(bounds,70);
+  }catch(error){status.textContent=error.message;mapElement.innerHTML='';}
 }
 function openWine(id){ const wine=wines.find(item=>item.id===id); if(wine){state.selected=wine;state.page='detail';render();} }
 render();

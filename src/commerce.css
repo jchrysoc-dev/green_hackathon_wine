@@ -1,0 +1,29 @@
+.checkout-page .notice,.confirmation-page .notice{margin:-28px -22px 28px}
+.checkout-intro,.stores-intro,.confirmation-page>p:not(.kicker){font:17px/1.5 Fraunces;max-width:440px;color:#596155}
+.order-slip{border-top:2px solid var(--ink);margin:28px 0}
+.order-slip>div{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
+.order-slip span{font:11px 'DM Mono';color:var(--moss)}
+.order-slip strong{font:16px Fraunces;text-align:right}
+.order-slip .order-total{padding-top:20px}
+.order-slip .order-total strong{font-size:24px;color:var(--rust)}
+.breathalyser{background:#e7eadb;padding:18px;margin:0 0 22px}
+.breathalyser strong{font:17px Fraunces}
+.breathalyser p{font-size:11px;line-height:1.45;margin:6px 0 0}
+.confirmation-mark{width:60px;height:60px;border-radius:50%;background:var(--lime);display:grid;place-items:center;font-size:26px;margin:18px 0 30px}
+.stores-page h1{font-size:50px}
+.map-status{font:11px 'DM Mono';color:var(--moss);margin:20px 0 10px}
+#shop-map{height:290px;background:#e7eadb;margin:0 0 18px}
+.shop-list{border-top:1px solid var(--ink)}
+.shop-result{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
+.shop-result>span:first-child{font:10px 'DM Mono';color:var(--rust)}
+.shop-result strong,.shop-result small{display:block}
+.shop-result strong{font:16px Fraunces}
+.shop-result small{font-size:10px;line-height:1.4;color:#6e766c;margin-top:3px}
+.shop-result>b{font:11px 'DM Mono';color:var(--moss)}
+.return-counters{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:28px}
+.return-counters>div{padding:24px 0}
+.return-counters>div+div{border-left:1px solid var(--line);padding-left:20px}
+.return-counters strong{font:52px/1 Fraunces;color:var(--rust);display:block;letter-spacing:-2px}
+.return-counters span{font:10px 'DM Mono';display:block;margin-top:8px}
+.impact-page .wide span{font:12px 'DM Mono'}
+@media(max-width:380px){.return-counters strong{font-size:43px}.stores-page h1{font-size:44px}}
