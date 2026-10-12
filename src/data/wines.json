@@ -18,6 +18,38 @@
       "shops": []
     },
     {
+      "id": "southbank-merlot",
+      "name": "Southbank Merlot",
+      "producer": "TasteMe demo selection",
+      "region": "South Eastern Australia",
+      "colour": "red",
+      "price_eur": 9.5,
+      "flavour": { "body": 3, "acidity": 2, "fruit": 5, "tannin": 2, "sweetness": 2 },
+      "tags": ["soft", "plum", "black cherry"],
+      "pairings": ["tomato pasta", "roast vegetables", "mild cheese"],
+      "description": "A demo Merlot profile with plum and black-cherry flavours, soft tannins and a medium body.",
+      "bottle": { "type": "lightweight", "glass_g": 420, "deposit_eur": 0 },
+      "online": false,
+      "photos": [],
+      "shops": []
+    },
+    {
+      "id": "southern-cross-shiraz-merlot",
+      "name": "Southern Cross Shiraz Merlot",
+      "producer": "TasteMe demo selection",
+      "region": "South Eastern Australia",
+      "colour": "red",
+      "price_eur": 10.0,
+      "flavour": { "body": 4, "acidity": 2, "fruit": 4, "tannin": 3, "sweetness": 2 },
+      "tags": ["rounded", "dark berries", "gentle spice"],
+      "pairings": ["mushroom pasta", "lamb stew", "hard cheese"],
+      "description": "A demo Shiraz Merlot profile with dark-berry flavour, gentle spice and a rounded finish.",
+      "bottle": { "type": "reusable", "glass_g": 500, "deposit_eur": 0.2 },
+      "online": false,
+      "photos": [],
+      "shops": []
+    },
+    {
       "id": "stage-wine",
       "name": "PLACEHOLDER – Stage bottle (the one you scan live)",
       "producer": "PLACEHOLDER Producer A",
